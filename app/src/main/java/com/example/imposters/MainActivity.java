@@ -2,7 +2,6 @@ package com.example.imposters;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -10,11 +9,13 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import android.app.AppOpsManager;
 import android.os.BatteryManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -59,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
         boolean isChargingStatus = isBatteryCharging(getApplicationContext());
         String chargingMsg = isChargingStatus ? "Your device is charging" : "Your device is NOT charging";
         text.setText(chargingMsg);
+        if(!checkPackagePermissions())
+            requestPermissions();
+
     }
 
     public static boolean isBatteryCharging(Context context) {
@@ -69,6 +73,19 @@ public class MainActivity extends AppCompatActivity {
                 status == BatteryManager.BATTERY_STATUS_FULL;
         return charging;
     }
+    public boolean checkPackagePermissions(){
+        AppOpsManager appOps =  (AppOpsManager)
+                getSystemService(Context.APP_OPS_SERVICE);
+        int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+                android.os.Process.myUid(), getPackageName());
+        if (mode == AppOpsManager.MODE_ALLOWED)
+                return true;
+        return false;
+    }
 
+    //https://medium.com/@quiro91/show-app-usage-with-usagestatsmanager-d47294537dab
+    public void requestPermissions(){
+        startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+    }
 
 }
