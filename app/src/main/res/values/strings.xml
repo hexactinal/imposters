@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Imposters</string>
+    <string name="title">Imposters:</string>
+    <string name="battery_time_remaining">Battery Time Remaining:</string>
+    <string name="time_til_80">Time til 80%</string>
+    <string name="apps_with_highest_battery_usage">Apps with Highest Battery Usage:</string>
+    <string name="batterypercent">BatteryPercent</string>
+    <string name="topapp">topApp</string>
+    <string name="secondapp">secondApp</string>
+    <string name="thirdapp">thirdApp</string>
+    <string name="amountofbattery">amountOfBattery</string>
+    <string name="wobbly_bar_for_decor">wobbly bar for decor</string>
 </resources>
