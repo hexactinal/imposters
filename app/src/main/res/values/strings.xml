@@ -10,4 +10,6 @@
     <string name="thirdapp">thirdApp</string>
     <string name="amountofbattery">amountOfBattery</string>
     <string name="wobbly_bar_for_decor">wobbly bar for decor</string>
+    <string name="current_percent">Current Percent:</string>
+    <string name="textview">TextView</string>
 </resources>
