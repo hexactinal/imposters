@@ -2,12 +2,19 @@ package com.example.imposters;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.util.Log;
+
+import android.os.BatteryManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,8 +55,20 @@ public class MainActivity extends AppCompatActivity {
         //Update text whenever battery changes
 
 
-
+        TextView text = (TextView)findViewById(R.id.percentage);
+        boolean isChargingStatus = isBatteryCharging(getApplicationContext());
+        String chargingMsg = isChargingStatus ? "Your device is charging" : "Your device is NOT charging";
+        text.setText(chargingMsg);
     }
 
+    public static boolean isBatteryCharging(Context context) {
+        IntentFilter batteryIntent = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = context.registerReceiver(null, batteryIntent);
+        int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+        boolean charging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                status == BatteryManager.BATTERY_STATUS_FULL;
+        return charging;
     }
+
+
 }
