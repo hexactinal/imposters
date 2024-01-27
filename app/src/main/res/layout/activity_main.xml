@@ -7,12 +7,19 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/percentLabel"
+        android:layout_width="122dp"
+        android:layout_height="25dp"
+        android:text="Current Percent:"
+        tools:layout_editor_absoluteX="38dp"
+        tools:layout_editor_absoluteY="102dp" />
+
+    <TextView
+        android:id="@+id/percentage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="TextView"
+        tools:layout_editor_absoluteX="227dp"
+        tools:layout_editor_absoluteY="103dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
