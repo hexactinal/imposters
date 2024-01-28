@@ -1,29 +1,33 @@
 package com.example.imposters;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AppOpsManager;
-import android.app.usage.UsageStats;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.widget.ImageView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import org.w3c.dom.Text;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView percentageView;
+
     private float startBatteryLevel;
     private boolean fullyCharged = false;
     private long startTime;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         refreshPercent();
-
         //Logic to display battery data
         Context context = getApplicationContext();
 
@@ -80,19 +83,8 @@ public class MainActivity extends AppCompatActivity {
         } else if (batteryPct <= 22) {
             ImageView.setImageResource(R.drawable.damagingbattlow);
         }
-        //Update text whenever battery changes
-        percentageView = (TextView) findViewById(R.id.percentage);
 
-        percentageView.setText(String.valueOf(batteryPct));
-
-        boolean isChargingStatus = isBatteryCharging(getApplicationContext());
-        String chargingMsg = isChargingStatus ? "Your device is charging" : "Your device is NOT charging";
-
-        percentageView.setText(String.valueOf(batteryPct));
-        if (!checkPackagePermissions()) {
-            requestPermissions();
-        }
-
+        setBatteryPercent(batteryPct);
         displayTime(batteryPct);
     }
 
@@ -127,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Update text whenever battery changes
     public static boolean isBatteryCharging(Context context) {
         IntentFilter batteryIntent = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = context.registerReceiver(null, batteryIntent);
@@ -137,13 +130,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean checkPackagePermissions() {
-        AppOpsManager appOps = (AppOpsManager)
-                getSystemService(Context.APP_OPS_SERVICE);
-        int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
-                android.os.Process.myUid(), getPackageName());
-        if (mode == AppOpsManager.MODE_ALLOWED)
-            return true;
-        return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            AppOpsManager appOps = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
+            int mode = appOps.checkOpNoThrow(
+                    AppOpsManager.OPSTR_GET_USAGE_STATS,
+                    android.os.Process.myUid(),
+                    getPackageName()
+            );
+
+            return mode == AppOpsManager.MODE_ALLOWED;
+        }
+        return true;
     }
 
     //https://medium.com/@quiro91/show-app-usage-with-usagestatsmanager-d47294537dab
@@ -182,17 +179,21 @@ public class MainActivity extends AppCompatActivity {
                     } else if (batteryPct <= 22) {
                         ImageView.setImageResource(R.drawable.damagingbattlow);
                     }
-                    TextView percentageView = (TextView) findViewById(R.id.percentage);
 
-                    percentageView.setText(String.valueOf(batteryPct));
+                    setBatteryPercent(batteryPct);
 
                     //display a message or something
                     Toast.makeText(getApplicationContext(), "Battery Level Refreshed :)", Toast.LENGTH_SHORT).show();
-
                 }
             });
         }
     }
 
-}
+    private void setBatteryPercent(float batteryPct) {
+        if (percentageView == null) {
+            percentageView = (TextView) findViewById(R.id.percentage);
+        }
 
+        percentageView.setText(String.valueOf(batteryPct));
+    }
+}
