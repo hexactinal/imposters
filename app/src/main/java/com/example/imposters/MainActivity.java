@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -53,8 +54,32 @@ public class MainActivity extends AppCompatActivity {
 
         percentageView.setText(Float.toString(batteryPct));
 
-        //Update text whenever battery changes
+        //update image to loosely reflect charge
 
+        //the big battery imageview
+        ImageView ImageView = (ImageView) findViewById(R.id.imageView2);
+        //the six? battery imgs
+        if (batteryPct >= 78){
+            ImageView.setImageResource(R.drawable.damagingbatthigh);
+
+        }
+        else if (batteryPct < 77){
+            ImageView.setImageResource(R.drawable.batthigh);
+        }
+        else if (batteryPct < 60){
+            ImageView.setImageResource(R.drawable.batthighmed);
+        }
+        else if (batteryPct < 45) {
+            ImageView.setImageResource(R.drawable.battlowmed);
+        }
+        else if (batteryPct < 30) {
+            ImageView.setImageResource(R.drawable.battlow);
+        }
+        else if (batteryPct <=22) {
+            ImageView.setImageResource(R.drawable.damagingbattlow);
+        }
+
+        //Update text whenever battery changes
 
         TextView text = (TextView)findViewById(R.id.percentage);
         boolean isChargingStatus = isBatteryCharging(getApplicationContext());
@@ -88,4 +113,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
     }
 
+    /*if (level > 79){
+        <ImageView2> src= dangerousbattfull;
+    }*/
 }

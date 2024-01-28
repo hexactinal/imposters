@@ -52,7 +52,8 @@
             android:layout_height="25dp"
             android:text="@string/current_percent"
             app:layout_constraintStart_toStartOf="@+id/imageView2"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView2"
+            tools:ignore="TextSizeCheck" />
 
         <TextView
             android:id="@+id/percentage"
