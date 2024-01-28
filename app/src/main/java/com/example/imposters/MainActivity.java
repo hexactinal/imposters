@@ -1,20 +1,31 @@
 package com.example.imposters;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.Manifest;
 import android.app.AppOpsManager;
-import android.app.usage.UsageStats;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.widget.ImageView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,8 +34,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        refreshPercent();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.POST_NOTIFICATIONS) != (PackageManager.PERMISSION_GRANTED)){
 
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
+
+        refreshPercent();
         //Logic to display battery data
         Context context = getApplicationContext();
 
@@ -33,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = context.registerReceiver(null, ifilter);
+
 
         // Are we charging / charged?
         int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
@@ -61,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
         //the six? battery imgs...
         if (batteryPct >= 78) {
             ImageView.setImageResource(R.drawable.damagingbatthigh);
+        //send notif
+            makeNotification();
 
         } else if (batteryPct < 77 && batteryPct >= 60) {
             ImageView.setImageResource(R.drawable.batthigh);
@@ -72,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
             ImageView.setImageResource(R.drawable.battlow);
         } else if (batteryPct <= 22) {
             ImageView.setImageResource(R.drawable.damagingbattlow);
+        //send notif
+            makeNotification();
         }
         TextView percentageView = (TextView) findViewById(R.id.percentage);
 
@@ -88,8 +110,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-        //Update text whenever battery changes
 
+
+        //Update text whenever battery changes
+/*Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+// Vibrate for 500 milliseconds
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+} else {
+    //deprecated in API 26
+    v.vibrate(500);
+}*/
 
 
     public static boolean isBatteryCharging(Context context) {
@@ -137,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
                     if (batteryPct >= 78) {
                         ImageView.setImageResource(R.drawable.damagingbatthigh);
+                        makeNotification();
 
                     } else if (batteryPct < 77 && batteryPct >= 60) {
                         ImageView.setImageResource(R.drawable.batthigh);
@@ -148,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                         ImageView.setImageResource(R.drawable.battlow);
                     } else if (batteryPct <= 22) {
                         ImageView.setImageResource(R.drawable.damagingbattlow);
+                        makeNotification();
                     }
                     TextView percentageView = (TextView) findViewById(R.id.percentage);
 
@@ -160,7 +193,38 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+    public void makeNotification(){
 
+        String chanelID = "CHANEL_ID_NOTIFICATION";
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), chanelID);
+        builder.setSmallIcon(R.drawable.untitled);
+        builder.setContentTitle("BATTERY HEALTH ALERT!!!!!! SERIOUS!!!!!!");
+        builder.setContentText("YOUR BATTERY IS DANGEROUSLY!!!!!! CHARGE NOW OR STOP CHARGING");
+        builder.setAutoCancel(false).setPriority(NotificationCompat.PRIORITY_MAX);
 
+        Intent intent = new Intent(getApplicationContext(), sendNotification.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_MUTABLE);
+
+        builder.setContentIntent(pendingIntent);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = notificationManager.getNotificationChannel(chanelID);
+
+            if(notificationChannel == null){
+                int importance = NotificationManager.IMPORTANCE_HIGH;
+                notificationChannel = new NotificationChannel(chanelID, "some name", importance);
+                notificationChannel.setLightColor(Color.rgb(232, 52, 235));
+                notificationChannel.enableVibration(true);
+                notificationManager.createNotificationChannel(notificationChannel);
+
+            }
+
+        }
+
+        notificationManager.notify(0, builder.build());
+    }
 
 }
