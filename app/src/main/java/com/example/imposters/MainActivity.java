@@ -1,21 +1,16 @@
 package com.example.imposters;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.app.AppOpsManager;
 import android.app.usage.UsageStats;
 import android.content.Context;
-import android.app.usage.UsageStatsManager;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.BatteryManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.TextView;
-import android.content.pm.PackageManager;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.Map;
-import java.util.Calendar;
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -26,13 +21,8 @@ public class MainActivity extends AppCompatActivity {
         boolean isCharging = isBatteryCharging(getApplicationContext());
         String chargingMsg = isCharging ? "Your device is charging" : "Your device is NOT charging";
         text.setText(chargingMsg);
-
-        //FIX LATER!
-        /*
-        if (!checkPackagePermissions()) {
+        if(!checkPackagePermissions())
             requestPermissions();
-        }
-        */
 
     }
 
@@ -47,25 +37,16 @@ public class MainActivity extends AppCompatActivity {
     public boolean checkPackagePermissions(){
         AppOpsManager appOps =  (AppOpsManager)
                 getSystemService(Context.APP_OPS_SERVICE);
-
-        int mode = appOps.checkOp(AppOpsManager.OPSTR_GET_USAGE_STATS,
+        int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
                 android.os.Process.myUid(), getPackageName());
-        //returns 3
-
-
-        return AppOpsManager.MODE_ALLOWED == mode;
-
+        if (mode == AppOpsManager.MODE_ALLOWED)
+                return true;
+        return false;
     }
 
     //https://medium.com/@quiro91/show-app-usage-with-usagestatsmanager-d47294537dab
     public void requestPermissions(){
         startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
-    }
-    public void usageStats(Context context, long startMils, long endMils){
-        UsageStatsManager usageStats = (UsageStatsManager)context.getSystemService(Context.USAGE_STATS_SERVICE);
-        Map<String, UsageStats> lUsageStatsMap = usageStats.
-                queryAndAggregateUsageStats(startMils, endMils);
-
     }
 
 }
