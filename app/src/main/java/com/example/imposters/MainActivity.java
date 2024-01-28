@@ -5,6 +5,7 @@ import android.app.AppOpsManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -27,12 +28,16 @@ import androidx.core.content.ContextCompat;
 
 import java.io.IOException;
 
+
 public class MainActivity extends AppCompatActivity {
+
+    private TextView percentageView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.POST_NOTIFICATIONS) != (PackageManager.PERMISSION_GRANTED)){
@@ -40,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
             }
         }
+
 
         refreshPercent();
         //Logic to display battery data
@@ -95,19 +101,29 @@ public class MainActivity extends AppCompatActivity {
         //send notif
             makeNotification();
         }
-        TextView percentageView = (TextView) findViewById(R.id.percentage);
+//
+//        LocalTime firstBat = LocalTime.of(0,0,0);
+//        LocalTime secondBat = LocalTime.of(0,0,0);
+//        if(batteryPct == 80){
+//            firstBat = LocalTime.now();
+//        }
+//        if(batteryPct == 80){
+//            secondBat = LocalTime.now();
+//        }
+//        long elapsedMinutes;
+//        LocalTime difference;
+//        if (secondBat != null && firstBat != null) {
+//            elapsedMinutes = Duration.between(firstBat, secondBat).toMinutes();
+//        }
 
-        percentageView.setText(String.valueOf(batteryPct));
+        setBatteryPercent(batteryPct);
 
-        TextView text = percentageView;
-        boolean isChargingStatus = isBatteryCharging(getApplicationContext());
-        String chargingMsg = isChargingStatus ? "Your device is charging" : "Your device is NOT charging";
+//        boolean isChargingStatus = isBatteryCharging(getApplicationContext());
+//        String chargingMsg = isChargingStatus ? "Your device is charging" : "Your device is NOT charging";
+//        percentageView.setText(chargingMsg);
 
-        text.setText(String.valueOf(batteryPct));
-        if (!checkPackagePermissions())
-            requestPermissions();
-
-
+//        if (!checkPackagePermissions())
+//            requestPermissions();
     }
 
 
@@ -123,6 +139,7 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 }*/
 
 
+    //Update text whenever battery changes
     public static boolean isBatteryCharging(Context context) {
         IntentFilter batteryIntent = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = context.registerReceiver(null, batteryIntent);
@@ -133,13 +150,17 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
     }
 
     public boolean checkPackagePermissions() {
-        AppOpsManager appOps = (AppOpsManager)
-                getSystemService(Context.APP_OPS_SERVICE);
-        int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
-                android.os.Process.myUid(), getPackageName());
-        if (mode == AppOpsManager.MODE_ALLOWED)
-            return true;
-        return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            AppOpsManager appOps = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
+            int mode = appOps.checkOpNoThrow(
+                    AppOpsManager.OPSTR_GET_USAGE_STATS,
+                    android.os.Process.myUid(),
+                    getPackageName()
+            );
+
+            return mode == AppOpsManager.MODE_ALLOWED;
+        }
+        return true;
     }
 
     //https://medium.com/@quiro91/show-app-usage-with-usagestatsmanager-d47294537dab
@@ -182,18 +203,17 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         ImageView.setImageResource(R.drawable.damagingbattlow);
                         makeNotification();
                     }
-                    TextView percentageView = (TextView) findViewById(R.id.percentage);
 
-                    percentageView.setText(String.valueOf(batteryPct));
+                    setBatteryPercent(batteryPct);
 
                     //display a message or something
                     Toast.makeText(getApplicationContext(), "Battery Level Refreshed :)", Toast.LENGTH_SHORT).show();
-
                 }
             });
         }
     }
     public void makeNotification(){
+
 
         String chanelID = "CHANEL_ID_NOTIFICATION";
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), chanelID);
@@ -225,6 +245,15 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         }
 
         notificationManager.notify(0, builder.build());
+    }
+
+
+    private void setBatteryPercent(float batteryPct) {
+        if (percentageView == null) {
+            percentageView = (TextView) findViewById(R.id.percentage);
+        }
+
+        percentageView.setText(String.valueOf(batteryPct));
     }
 
 }
