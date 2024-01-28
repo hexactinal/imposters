@@ -89,13 +89,11 @@ public class MainActivity extends AppCompatActivity {
 //            elapsedMinutes = Duration.between(firstBat, secondBat).toMinutes();
 //        }
 
-        percentageView = (TextView) findViewById(R.id.percentage);
+        setBatteryPercent(batteryPct);
 
-        percentageView.setText(String.valueOf(batteryPct));
-
-        boolean isChargingStatus = isBatteryCharging(getApplicationContext());
-        String chargingMsg = isChargingStatus ? "Your device is charging" : "Your device is NOT charging";
-        percentageView.setText(chargingMsg);
+//        boolean isChargingStatus = isBatteryCharging(getApplicationContext());
+//        String chargingMsg = isChargingStatus ? "Your device is charging" : "Your device is NOT charging";
+//        percentageView.setText(chargingMsg);
 
 //        if (!checkPackagePermissions())
 //            requestPermissions();
@@ -163,15 +161,21 @@ public class MainActivity extends AppCompatActivity {
                     } else if (batteryPct <= 22) {
                         ImageView.setImageResource(R.drawable.damagingbattlow);
                     }
-                    TextView percentageView = (TextView) findViewById(R.id.percentage);
 
-                    percentageView.setText(String.valueOf(batteryPct));
+                    setBatteryPercent(batteryPct);
 
                     //display a message or something
                     Toast.makeText(getApplicationContext(), "Battery Level Refreshed :)", Toast.LENGTH_SHORT).show();
-
                 }
             });
         }
+    }
+
+    private void setBatteryPercent(float batteryPct) {
+        if (percentageView == null) {
+            percentageView = (TextView) findViewById(R.id.percentage);
+        }
+
+        percentageView.setText(String.valueOf(batteryPct));
     }
 }
