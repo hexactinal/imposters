@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -62,6 +64,16 @@ public class MainActivity extends AppCompatActivity {
         if (!checkPackagePermissions())
             requestPermissions();
 
+        //Function to calculate the battery time remaining for the device
+
+
+        TextView timeText = (TextView) findViewById(R.id.textView);
+            // Calculate remaining time for full charge
+            int timeRemaining = (int) ((scale * (1 - batteryPct)) / (level / 1000f));
+            // Display remaining time
+            timeText.setText("Battery Time Remaining: " + timeRemaining + " minutes");
+
+
     }
 
     public static boolean isBatteryCharging(Context context) {
@@ -91,8 +103,6 @@ public class MainActivity extends AppCompatActivity {
     //Button to refresh percentage level
     // -> https://www.geeksforgeeks.org/button-in-kotlin/
     // -> https://developer.android.com/guide/topics/ui/notifiers/toasts#Basics
-
-
     public void refreshPercent() {
         Button button = (Button) findViewById(R.id.refreshButton);
         if (button != null) {
@@ -106,5 +116,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
 }
+
