@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.widget.ImageView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -19,8 +20,13 @@ import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
+    private TextView percentageView;
+    private float startBatteryLevel;
+    private boolean fullyCharged = false;
+    private long startTime;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -30,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
         Context context = getApplicationContext();
 
         //Code that determines the current charging status
+        BatteryManager bm = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
+
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = context.registerReceiver(null, ifilter);
 
@@ -46,34 +54,77 @@ public class MainActivity extends AppCompatActivity {
         int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
-        float batteryPct = level * 100 / (float) scale;
+        int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+
+        //ik this is dumb just go w it plz :)
+        float batteryPct = batLevel;//level * 100 / (float) scale;
 
         //Display for text
-        TextView percentageView = (TextView) findViewById(R.id.percentage);
 
-        percentageView.setText(Float.toString(batteryPct));
+        //update image to loosely reflect charge
+        //the big battery imageview
 
+        ImageView ImageView = (ImageView) findViewById(R.id.imageView2);
+        //the six? battery imgs...
+        if (batteryPct >= 78) {
+            ImageView.setImageResource(R.drawable.damagingbatthigh);
+
+        } else if (batteryPct < 77 && batteryPct >= 60) {
+            ImageView.setImageResource(R.drawable.batthigh);
+        } else if (batteryPct < 60 && batteryPct >= 45) {
+            ImageView.setImageResource(R.drawable.batthighmed);
+        } else if (batteryPct < 45 && batteryPct >= 30) {
+            ImageView.setImageResource(R.drawable.battlowmed);
+        } else if (batteryPct < 30 && batteryPct > 22) {
+            ImageView.setImageResource(R.drawable.battlow);
+        } else if (batteryPct <= 22) {
+            ImageView.setImageResource(R.drawable.damagingbattlow);
+        }
         //Update text whenever battery changes
+        percentageView = (TextView) findViewById(R.id.percentage);
 
+        percentageView.setText(String.valueOf(batteryPct));
 
-        TextView text = (TextView) findViewById(R.id.percentage);
         boolean isChargingStatus = isBatteryCharging(getApplicationContext());
         String chargingMsg = isChargingStatus ? "Your device is charging" : "Your device is NOT charging";
 
-        text.setText(chargingMsg);
-        if (!checkPackagePermissions())
+        percentageView.setText(String.valueOf(batteryPct));
+        if (!checkPackagePermissions()) {
             requestPermissions();
+        }
 
-        //Function to calculate the battery time remaining for the device
+        displayTime(batteryPct);
+    }
 
-
+    //Function to display the battery time remaining for the device
+    private void displayTime(float batteryPct) {
         TextView timeText = (TextView) findViewById(R.id.textView);
-            // Calculate remaining time for full charge
-            int timeRemaining = (int) ((scale * (1 - batteryPct)) / (level / 1000f));
-            // Display remaining time
-            timeText.setText("Battery Time Remaining: " + timeRemaining + " minutes");
+        // Calculate remaining time for full charge
+        //int timeRemaining = (int) ((scale * (1 - batteryPct)) / (level / 1000f));
+        //Discharging Time=Battery Capacity*Battery Volt/Device Watt.
+        if (!fullyCharged) {
+            if (batteryPct < 100) {
+                if (startBatteryLevel == 0) {
+                    startBatteryLevel = batteryPct;
+                    startTime = System.currentTimeMillis();
+                } else {
+                    long currentTime = System.currentTimeMillis();
+                    long elapsedTime = currentTime - startTime;
+                    float dischargeRate = (startBatteryLevel - batteryPct);
 
+                    // Estimate remaining time
+                    float remainingTime = (100 - batteryPct) / dischargeRate;
 
+                    // Display remaining time
+                    timeText.setText("Battery Time Remaining " + (int) remainingTime + " minutes");
+
+                }
+            } else {
+                //Battery fully charged
+                fullyCharged = true;
+                timeText.setText("Battery Charged Fully");
+            }
+        }
     }
 
     public static boolean isBatteryCharging(Context context) {
@@ -100,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
     }
 
+
     //Button to refresh percentage level
     // -> https://www.geeksforgeeks.org/button-in-kotlin/
     // -> https://developer.android.com/guide/topics/ui/notifiers/toasts#Basics
@@ -109,8 +161,34 @@ public class MainActivity extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View it) {
+
+                    Context context = getApplicationContext();
+                    BatteryManager bm = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
+                    int batteryPct = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+
+                    ImageView ImageView = (ImageView) findViewById(R.id.imageView2);
+
+                    if (batteryPct >= 78) {
+                        ImageView.setImageResource(R.drawable.damagingbatthigh);
+
+                    } else if (batteryPct < 77 && batteryPct >= 60) {
+                        ImageView.setImageResource(R.drawable.batthigh);
+                    } else if (batteryPct < 60 && batteryPct >= 45) {
+                        ImageView.setImageResource(R.drawable.batthighmed);
+                    } else if (batteryPct < 45 && batteryPct >= 30) {
+                        ImageView.setImageResource(R.drawable.battlowmed);
+                    } else if (batteryPct < 30 && batteryPct > 22) {
+                        ImageView.setImageResource(R.drawable.battlow);
+                    } else if (batteryPct <= 22) {
+                        ImageView.setImageResource(R.drawable.damagingbattlow);
+                    }
+                    TextView percentageView = (TextView) findViewById(R.id.percentage);
+
+                    percentageView.setText(String.valueOf(batteryPct));
+
                     //display a message or something
                     Toast.makeText(getApplicationContext(), "Battery Level Refreshed :)", Toast.LENGTH_SHORT).show();
+
                 }
             });
         }
