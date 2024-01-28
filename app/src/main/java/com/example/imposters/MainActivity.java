@@ -19,7 +19,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -128,8 +128,34 @@ public class MainActivity extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View it) {
+
+                    Context context = getApplicationContext();
+                    BatteryManager bm = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
+                    int batteryPct = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+
+                    ImageView ImageView = (ImageView) findViewById(R.id.imageView2);
+
+                    if (batteryPct >= 78) {
+                        ImageView.setImageResource(R.drawable.damagingbatthigh);
+
+                    } else if (batteryPct < 77 && batteryPct >= 60) {
+                        ImageView.setImageResource(R.drawable.batthigh);
+                    } else if (batteryPct < 60 && batteryPct >= 45) {
+                        ImageView.setImageResource(R.drawable.batthighmed);
+                    } else if (batteryPct < 45 && batteryPct >= 30) {
+                        ImageView.setImageResource(R.drawable.battlowmed);
+                    } else if (batteryPct < 30 && batteryPct > 22) {
+                        ImageView.setImageResource(R.drawable.battlow);
+                    } else if (batteryPct <= 22) {
+                        ImageView.setImageResource(R.drawable.damagingbattlow);
+                    }
+                    TextView percentageView = (TextView) findViewById(R.id.percentage);
+
+                    percentageView.setText(String.valueOf(batteryPct));
+
                     //display a message or something
                     Toast.makeText(getApplicationContext(), "Battery Level Refreshed :)", Toast.LENGTH_SHORT).show();
+
                 }
             });
         }
