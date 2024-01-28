@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Function to display the battery time remaining for the device
     private void displayTime(float batteryPct) {
-        TextView timeText = (TextView) findViewById(R.id.textView);
+        TextView timeText = (TextView) findViewById(R.id.remainingPercentOutput);
         // Calculate remaining time for full charge
         //int timeRemaining = (int) ((scale * (1 - batteryPct)) / (level / 1000f));
         //Discharging Time=Battery Capacity*Battery Volt/Device Watt.
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
 //                timeText.setText("Battery Charged Fully");
 //            }
 //        }
-        timeText.setText("Percent left to charge: " + (100.0f - batteryPct));
+        timeText.setText(Float.toString(100.0f - batteryPct));
     }
 
 
