@@ -13,4 +13,5 @@
     <string name="current_percent">Current Percent:</string>
     <string name="textview">your battery is oof ouch owie</string>
     <string name="refresh">Refresh</string>
+    <string name="your_battery_is_currently_being_damaged">your battery is currently being damaged!</string>
 </resources>
