@@ -12,4 +12,5 @@
     <string name="wobbly_bar_for_decor">wobbly bar for decor</string>
     <string name="current_percent">Current Percent:</string>
     <string name="textview">your battery is oof ouch owie</string>
+    <string name="refresh">Refresh</string>
 </resources>

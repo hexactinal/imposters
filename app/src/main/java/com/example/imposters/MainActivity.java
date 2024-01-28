@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
         Context context = getApplicationContext();
 
         //Code that determines the current charging status
+        BatteryManager bm = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
+
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = context.registerReceiver(null, ifilter);
 
@@ -45,49 +47,50 @@ public class MainActivity extends AppCompatActivity {
         int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
-        float batteryPct = level * 100 / (float) scale;
+        int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+
+        //ik this is dumb just go w it plz :)
+        float batteryPct = batLevel;//level * 100 / (float) scale;
 
         //Display for text
-        TextView percentageView = (TextView) findViewById(R.id.percentage);
-
-        percentageView.setText(Float.toString(batteryPct));
 
         //update image to loosely reflect charge
-
         //the big battery imageview
+
         ImageView ImageView = (ImageView) findViewById(R.id.imageView2);
-        //the six? battery imgs
-        if (batteryPct >= 78){
+        //the six? battery imgs...
+        if (batteryPct >= 78) {
             ImageView.setImageResource(R.drawable.damagingbatthigh);
 
-        }
-        else if (batteryPct < 77){
+        } else if (batteryPct < 77 && batteryPct >= 60) {
             ImageView.setImageResource(R.drawable.batthigh);
-        }
-        else if (batteryPct < 60){
+        } else if (batteryPct < 60 && batteryPct >= 45) {
             ImageView.setImageResource(R.drawable.batthighmed);
-        }
-        else if (batteryPct < 45) {
+        } else if (batteryPct < 45 && batteryPct >= 30) {
             ImageView.setImageResource(R.drawable.battlowmed);
-        }
-        else if (batteryPct < 30) {
+        } else if (batteryPct < 30 && batteryPct > 22) {
             ImageView.setImageResource(R.drawable.battlow);
-        }
-        else if (batteryPct <=22) {
+        } else if (batteryPct <= 22) {
             ImageView.setImageResource(R.drawable.damagingbattlow);
         }
+        TextView percentageView = (TextView) findViewById(R.id.percentage);
 
-        //Update text whenever battery changes
+        percentageView.setText(String.valueOf(batteryPct));
 
-        TextView text = (TextView) findViewById(R.id.percentage);
+        TextView text = percentageView;
         boolean isChargingStatus = isBatteryCharging(getApplicationContext());
         String chargingMsg = isChargingStatus ? "Your device is charging" : "Your device is NOT charging";
 
-        text.setText(chargingMsg);
+        text.setText(String.valueOf(batteryPct));
         if (!checkPackagePermissions())
             requestPermissions();
 
+
     }
+
+        //Update text whenever battery changes
+
+
 
     public static boolean isBatteryCharging(Context context) {
         IntentFilter batteryIntent = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
