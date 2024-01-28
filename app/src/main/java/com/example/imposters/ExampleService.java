@@ -14,18 +14,6 @@ public class ExampleService extends Service {
     public void onCreate(){
         super.onCreate();
     }
-    /*@Override
-    public int onStartCommand(Intent intent, int flags, int startId){
-        return super.onStartCommand(intent, flags, startId);
-
-        String chanelID = "CHANEL_ID_NOTIFICATION";
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), chanelID);
-        builder.setSmallIcon(R.drawable.untitled);
-        builder.setContentTitle("BATTERY HEALTH ALERT!!!!!! SERIOUS!!!!!!");
-        builder.setContentText("YOUR BATTERY IS DANGEROUSLY!!!!!! CHARGE NOW OR STOP CHARGING");
-        builder.setAutoCancel(false).setPriority(NotificationCompat.PRIORITY_MAX);
-
-    }*/
 
     @Override
     public void onDestroy(){

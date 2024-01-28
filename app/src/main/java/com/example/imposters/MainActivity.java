@@ -1,11 +1,9 @@
 package com.example.imposters;
 
 import android.Manifest;
-import android.app.AppOpsManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -17,20 +15,14 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
-import org.w3c.dom.Text;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
-
-import java.io.IOException;
 
 
 
@@ -39,19 +31,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView percentageView;
 
 
-
-
-    private float startBatteryLevel;
-    private boolean fullyCharged = false;
-    private long startTime;
-
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //createNotificationChannel();
 
         setContentView(R.layout.activity_main);
 
@@ -91,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
 
         //ik this is dumb just go w it plz :)
-        float batteryPct = batLevel;//level * 100 / (float) scale;
+        float batteryPct = batLevel;
 
         //Display for text
 
@@ -127,47 +109,8 @@ public class MainActivity extends AppCompatActivity {
     private void displayTime(float batteryPct) {
         TextView timeText = (TextView) findViewById(R.id.remainingPercentOutput);
         // Calculate remaining time for full charge
-        //int timeRemaining = (int) ((scale * (1 - batteryPct)) / (level / 1000f));
-        //Discharging Time=Battery Capacity*Battery Volt/Device Watt.
-//        if (!fullyCharged) {
-//            if (batteryPct < 100) {
-//                if (startBatteryLevel == 0) {
-//                    startBatteryLevel = batteryPct;
-//                    startTime = System.currentTimeMillis();
-//                }
-//                long currentTime = System.currentTimeMillis();
-//                long elapsedTime = currentTime - startTime;
-//                float dischargeRate = (startBatteryLevel - batteryPct);
-//
-//                // Estimate remaining time
-//                if (dischargeRate <= 0) {
-//                    dischargeRate = 1.0f;
-//                }
-//                float remainingTime = (100 - batteryPct) / dischargeRate;
-//
-//                // Display remaining time
-//                timeText.setText("Battery Time Remaining " + (int) remainingTime + " minutes");
-//            } else {
-//                //Battery fully charged
-//                fullyCharged = true;
-//                timeText.setText("Battery Charged Fully");
-//            }
-//        }
-        timeText.setText(Float.toString(100.0f - batteryPct));
+        timeText.setText(String.format("%.1f", (100.0f - batteryPct)));
     }
-
-
-
-        //Update text whenever battery changes
-/*Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-// Vibrate for 500 milliseconds
-if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-    v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
-} else {
-    //deprecated in API 26
-    v.vibrate(500);
-}*/
-
 
     //Update text whenever battery changes
     public static boolean isBatteryCharging(Context context) {
@@ -177,20 +120,6 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         boolean charging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
                 status == BatteryManager.BATTERY_STATUS_FULL;
         return charging;
-    }
-
-    public boolean checkPackagePermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            AppOpsManager appOps = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
-            int mode = appOps.checkOpNoThrow(
-                    AppOpsManager.OPSTR_GET_USAGE_STATS,
-                    android.os.Process.myUid(),
-                    getPackageName()
-            );
-
-            return mode == AppOpsManager.MODE_ALLOWED;
-        }
-        return true;
     }
 
     //https://medium.com/@quiro91/show-app-usage-with-usagestatsmanager-d47294537dab
