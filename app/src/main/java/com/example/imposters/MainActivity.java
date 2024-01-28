@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,9 +34,15 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView percentageView;
 
+    private EditText editTextInput;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //createNotificationChannel();
+
         setContentView(R.layout.activity_main);
 
 
@@ -218,12 +225,13 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         String chanelID = "CHANEL_ID_NOTIFICATION";
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), chanelID);
         builder.setSmallIcon(R.drawable.untitled);
-        builder.setContentTitle("BATTERY HEALTH ALERT!!!!!! SERIOUS!!!!!!");
-        builder.setContentText("YOUR BATTERY IS DANGEROUSLY!!!!!! CHARGE NOW OR STOP CHARGING");
+        builder.setContentTitle("YOUR BATTERY IS BEING DAMAGED!");
+        builder.setContentText("YOUR BATTERY IS BEING DAMAGED!!!!!! CHARGE NOW OR STOP CHARGING");
         builder.setAutoCancel(false).setPriority(NotificationCompat.PRIORITY_MAX);
 
-        Intent intent = new Intent(getApplicationContext(), sendNotification.class);
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("data", "some value to be passed her");
 
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_MUTABLE);
 
@@ -233,20 +241,32 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = notificationManager.getNotificationChannel(chanelID);
 
-            if(notificationChannel == null){
-                int importance = NotificationManager.IMPORTANCE_HIGH;
-                notificationChannel = new NotificationChannel(chanelID, "some name", importance);
-                notificationChannel.setLightColor(Color.rgb(232, 52, 235));
-                notificationChannel.enableVibration(true);
-                notificationManager.createNotificationChannel(notificationChannel);
+                if (notificationChannel ==  null) {
+                    int importance = NotificationManager.IMPORTANCE_HIGH;
+                    notificationChannel = new NotificationChannel(chanelID, "some name", importance);
+                    notificationChannel.setLightColor(Color.rgb(232, 52, 235));
+                    notificationChannel.enableVibration(true);
+                    notificationManager.createNotificationChannel(notificationChannel);
+                }
 
-            }
+                //start service on launch end service on notif, restart on refresh button
+
 
         }
 
         notificationManager.notify(0, builder.build());
     }
 
+    public void startService(View V){
+        Intent serviceIntent = new Intent(this, ExampleService.class);
+
+        startService(serviceIntent);
+    }
+    public void stopService(View v){
+        Intent serviceIntent = new Intent(this, ExampleService.class);
+
+        stopService(serviceIntent);
+    }
 
     private void setBatteryPercent(float batteryPct) {
         if (percentageView == null) {
