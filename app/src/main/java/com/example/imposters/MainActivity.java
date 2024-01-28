@@ -121,29 +121,31 @@ public class MainActivity extends AppCompatActivity {
         // Calculate remaining time for full charge
         //int timeRemaining = (int) ((scale * (1 - batteryPct)) / (level / 1000f));
         //Discharging Time=Battery Capacity*Battery Volt/Device Watt.
-        if (!fullyCharged) {
-            if (batteryPct < 100) {
-                if (startBatteryLevel == 0) {
-                    startBatteryLevel = batteryPct;
-                    startTime = System.currentTimeMillis();
-                } else {
-                    long currentTime = System.currentTimeMillis();
-                    long elapsedTime = currentTime - startTime;
-                    float dischargeRate = (startBatteryLevel - batteryPct);
-
-                    // Estimate remaining time
-                    float remainingTime = (100 - batteryPct) / dischargeRate;
-
-                    // Display remaining time
-                    timeText.setText("Battery Time Remaining " + (int) remainingTime + " minutes");
-
-                }
-            } else {
-                //Battery fully charged
-                fullyCharged = true;
-                timeText.setText("Battery Charged Fully");
-            }
-        }
+//        if (!fullyCharged) {
+//            if (batteryPct < 100) {
+//                if (startBatteryLevel == 0) {
+//                    startBatteryLevel = batteryPct;
+//                    startTime = System.currentTimeMillis();
+//                }
+//                long currentTime = System.currentTimeMillis();
+//                long elapsedTime = currentTime - startTime;
+//                float dischargeRate = (startBatteryLevel - batteryPct);
+//
+//                // Estimate remaining time
+//                if (dischargeRate <= 0) {
+//                    dischargeRate = 1.0f;
+//                }
+//                float remainingTime = (100 - batteryPct) / dischargeRate;
+//
+//                // Display remaining time
+//                timeText.setText("Battery Time Remaining " + (int) remainingTime + " minutes");
+//            } else {
+//                //Battery fully charged
+//                fullyCharged = true;
+//                timeText.setText("Battery Charged Fully");
+//            }
+//        }
+        timeText.setText("Percent left to charge: " + (100.0f - batteryPct));
     }
 
 
