@@ -11,8 +11,8 @@
         android:layout_width="122dp"
         android:layout_height="25dp"
         android:text="Current Percent:"
-        tools:layout_editor_absoluteX="38dp"
-        tools:layout_editor_absoluteY="102dp" />
+        tools:layout_editor_absoluteX="44dp"
+        tools:layout_editor_absoluteY="103dp" />
 
     <TextView
         android:id="@+id/percentage"
@@ -21,5 +21,13 @@
         android:text="TextView"
         tools:layout_editor_absoluteX="227dp"
         tools:layout_editor_absoluteY="103dp" />
+
+    <Button
+        android:id="@+id/refreshButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Refresh"
+        tools:layout_editor_absoluteX="156dp"
+        tools:layout_editor_absoluteY="338dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
