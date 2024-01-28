@@ -2,18 +2,12 @@ package com.example.imposters;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.BatteryManager;
-import android.os.Bundle;
-import android.util.Log;
-
 import android.app.AppOpsManager;
-import android.os.BatteryManager;
+import android.app.usage.UsageStats;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
@@ -27,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         refreshPercent();
 
         //Logic to display battery data
@@ -38,8 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Are we charging / charged?
         int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-        boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                status == BatteryManager.BATTERY_STATUS_FULL;
+        boolean isCharging = isBatteryCharging(getApplicationContext());
 
         // How are we charging?
         int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
@@ -63,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         TextView text = (TextView) findViewById(R.id.percentage);
         boolean isChargingStatus = isBatteryCharging(getApplicationContext());
         String chargingMsg = isChargingStatus ? "Your device is charging" : "Your device is NOT charging";
+
         text.setText(chargingMsg);
         if (!checkPackagePermissions())
             requestPermissions();
