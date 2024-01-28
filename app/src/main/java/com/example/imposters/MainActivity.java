@@ -22,6 +22,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import org.w3c.dom.Text;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -30,11 +33,18 @@ import androidx.core.content.ContextCompat;
 import java.io.IOException;
 
 
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView percentageView;
 
-    private EditText editTextInput;
+
+
+
+    private float startBatteryLevel;
+    private boolean fullyCharged = false;
+    private long startTime;
+
 
 
     @Override
@@ -108,29 +118,42 @@ public class MainActivity extends AppCompatActivity {
         //send notif
             makeNotification();
         }
-//
-//        LocalTime firstBat = LocalTime.of(0,0,0);
-//        LocalTime secondBat = LocalTime.of(0,0,0);
-//        if(batteryPct == 80){
-//            firstBat = LocalTime.now();
-//        }
-//        if(batteryPct == 80){
-//            secondBat = LocalTime.now();
-//        }
-//        long elapsedMinutes;
-//        LocalTime difference;
-//        if (secondBat != null && firstBat != null) {
-//            elapsedMinutes = Duration.between(firstBat, secondBat).toMinutes();
-//        }
 
         setBatteryPercent(batteryPct);
+        displayTime(batteryPct);
+    }
 
-//        boolean isChargingStatus = isBatteryCharging(getApplicationContext());
-//        String chargingMsg = isChargingStatus ? "Your device is charging" : "Your device is NOT charging";
-//        percentageView.setText(chargingMsg);
-
-//        if (!checkPackagePermissions())
-//            requestPermissions();
+    //Function to display the battery time remaining for the device
+    private void displayTime(float batteryPct) {
+        TextView timeText = (TextView) findViewById(R.id.remainingPercentOutput);
+        // Calculate remaining time for full charge
+        //int timeRemaining = (int) ((scale * (1 - batteryPct)) / (level / 1000f));
+        //Discharging Time=Battery Capacity*Battery Volt/Device Watt.
+//        if (!fullyCharged) {
+//            if (batteryPct < 100) {
+//                if (startBatteryLevel == 0) {
+//                    startBatteryLevel = batteryPct;
+//                    startTime = System.currentTimeMillis();
+//                }
+//                long currentTime = System.currentTimeMillis();
+//                long elapsedTime = currentTime - startTime;
+//                float dischargeRate = (startBatteryLevel - batteryPct);
+//
+//                // Estimate remaining time
+//                if (dischargeRate <= 0) {
+//                    dischargeRate = 1.0f;
+//                }
+//                float remainingTime = (100 - batteryPct) / dischargeRate;
+//
+//                // Display remaining time
+//                timeText.setText("Battery Time Remaining " + (int) remainingTime + " minutes");
+//            } else {
+//                //Battery fully charged
+//                fullyCharged = true;
+//                timeText.setText("Battery Charged Fully");
+//            }
+//        }
+        timeText.setText(Float.toString(100.0f - batteryPct));
     }
 
 
@@ -179,8 +202,6 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
     //Button to refresh percentage level
     // -> https://www.geeksforgeeks.org/button-in-kotlin/
     // -> https://developer.android.com/guide/topics/ui/notifiers/toasts#Basics
-
-
     public void refreshPercent() {
         Button button = (Button) findViewById(R.id.refreshButton);
         if (button != null) {
@@ -277,3 +298,6 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
     }
 
 }
+
+
+
